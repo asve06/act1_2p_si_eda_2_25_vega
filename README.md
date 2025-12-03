@@ -10,7 +10,7 @@ The main objective is to analyze perfume characteristics, identify underlying pa
 ## Task
 
 Recommend similar perfumes based on their descriptions and shared characteristics.
-The project will use textual and categorical data (notes, accords, brands, and ratings) to identify relationships and similarities among perfumes.
+The project will use textual and categorical data (notes, accords) to identify relationships and similarities among perfumes.
 
 ---
 
@@ -49,9 +49,10 @@ The dataset contains detailed information about perfumes, including:
 - **NumPy** – numerical operations
 - **Matplotlib** and **Seaborn** – visualization (EDA)
 - **Scikit-learn (sklearn)** – TF-IDF vectorization, K-NN modeling, and similarity computation
-- **NLTK / Stopwords (if applicable)** – basic text preprocessing
+- **NLTK / Stopwords** – basic text preprocessing
 - **SciPy** – cosine distance calculations (via sklearn dependencies)
-
+- **KFold and StratifiedKFold** - for data-splitting techniques
+  **accuracy_score** - for evaluating supervised model performance
 
 ---
 
@@ -61,11 +62,12 @@ The dataset contains detailed information about perfumes, including:
 ACT1_2P_SI_EDA_2_25_VEGA/
 │
 ├── code/                        # Google Colab notebook
-│   └── act1_2p_si_eda_2_25_vega.ipynb
-│   └── act2_2p_si_tech_2_25_vega.ipynb
+│   ├── act1_2p_si_eda_2_25_vega.ipynb
+│   ├── act2_2p_si_tech_2_25_vega.ipynb
+│   └── act2_2p_si_split_2_25_vega.ipynb
 │
 ├── dataset/                     # Datasets used in this project
-│   └── fraganciasdt.csv
+│   ├── fraganciasdt.csv
 │   └── df_women.csv
 │
 └── documentation/               # Report and visual outputs
@@ -77,9 +79,10 @@ ACT1_2P_SI_EDA_2_25_VEGA/
     │   └── graph5.png
     ├── images/                  # Images obtained from TECH
     │   ├── results.png
-    │   ├── results2.png
-    └── report.md                # Markdown report
-    └── report_act2.md           # Encoding & feature processing report
+    │   └── results2.png
+    ├── report.md                # Markdown report
+    ├── report_act2.md           # Encoding & feature processing report
+    └── report_act3.md           # Data-splitting techniques & final model report
 ```
 
 ---
@@ -161,10 +164,45 @@ This was the main encoding method used to build the similarity matrix for K-NN.
 
 ---
 
+# **Data Splitting Techniques and Model Comparison**
+
+This activity introduces two supervised data-splitting techniques **K-Fold** and **Stratified K-Fold**.
+Although the main goal of the project is a _similarity-based TF-IDF + KNN recommendation model_ (does not rrely on training or labels), reframing the dataset as a classification task allows the use of cross-validation to evaluate how much information the combined note text contains about the dominant accord (`mainaccord1`).
+
+## **Techniques Applied**
+
+- **K-Fold Cross-Validation:** Splits the data into _k_ folds and rotates the test set.
+- **Stratified K-Fold Cross-Validation:** Same process, but preserving class distribution; essential for imbalanced labels.
+
+## **Model Used for Comparison**
+
+A supervised **TF-IDF + KNN classifier (`n_neighbors=5`, cosine distance)** was trained using both techniques, and results were compared against a simple baseline that predicts only the most common accord.
+
+## **Results Summary**
+
+| Configuration           | Accuracy  |
+| ----------------------- | --------- |
+| Majority-class baseline | 0.153     |
+| 5-Fold CV               | 0.398     |
+| Stratified 5-Fold CV    | **0.403** |
+
+Stratified K-Fold achieved the highest mean accuracy by maintaining balanced representation across scent families.
+
+## **Conclusion**
+
+Applying splitting techniques proved meaningful for evaluating supervised performance.
+**Stratified K-Fold** was selected as the best supervised configuration due to its stability and higher accuracy.
+However, the **final model of the project remains the TF-IDF + KNN recommendation system**, since it aligns with the real objective -> generating perfume similarities based on note composition (description) rather than predicting labels.
+
+---
+
 ## Summary of Findings
 
 - TF-IDF significantly improves scent-based similarity by capturing distintic aromatic patterns.
 - The baseline model only detects simple textual coincidences.
 - The enhanced model provides more accurate rankings aligned with the real fragrance composition.
+- The supervised data-splitting techniques (K-Fold and Stratified K-Fold) confirmed that the note text contains enough signal to predict mainaccord1. (not meaningful).
+- TF-IDF greatly enhances fragrance comparison by highlighting distinctive aromatic terms and reducing noise from common notes.
+- The final TF-IDF + KNN model delivers more coherent and realistic similarity rankings, producing recommendations aligned with actual olfactory composition.
 
 ---
